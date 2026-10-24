@@ -1,0 +1,524 @@
+<title>photobooth hd parah</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Parisienne&family=Dancing+Script:wght@500;700&family=Quicksand:wght@500;700&display=swap">
+<style>
+/* Layout: satu kolom di tengah panggung gingham pink. Judul, kotak kado dengan bow, tiga hati penghitung ketukan.
+   Surat naik dari kotak ke lapisan layar penuh. Tampilan sengaja satu tema (pink terang) agar bow dan mutiara tetap manis. */
+:root {
+  color-scheme: light;
+  --bg: #ffe3ec;
+  --glow: #fff6f9;
+  --check: rgba(255, 143, 177, 0.2);
+  --pink: #ff8fb1;
+  --pink-soft: #ffb3c9;
+  --pink-pale: #ffd6e3;
+  --pink-deep: #e8618c;
+  --cherry: #c9314f;
+  --berry: #c93a6e;
+  --cream: #fff8f2;
+  --text: #a02e5c;
+  --text-soft: #8a3f5c;
+  --ink: #7a3b55;
+  --paper: #fffaf6;
+  --rule: rgba(255, 143, 177, 0.28);
+  --margin-line: #ffb3c9;
+  --font-display: "Parisienne", "Brush Script MT", cursive;
+  --font-hand: "Dancing Script", "Segoe Script", cursive;
+  --font-ui: "Quicksand", system-ui, "Segoe UI", sans-serif;
+}
+ 
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-size: 1rem;
+  font-family: var(--font-ui);
+  color: var(--text);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(70% 55% at 50% 55%, var(--glow) 0%, rgba(255, 246, 249, 0) 100%),
+    linear-gradient(90deg, var(--check) 50%, transparent 50%),
+    linear-gradient(var(--check) 50%, transparent 50%);
+  background-size: auto, 36px 36px, 36px 36px;
+  overflow-x: hidden;
+}
+ 
+.defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+ 
+.stage {
+  box-sizing: border-box;
+  min-height: 100%;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: clamp(14px, 3.5vh, 26px);
+  padding-block: 24px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  text-align: center;
+}
+ 
+h1 {
+  margin: 0;
+  max-width: 11em;
+  font: 400 clamp(2.5rem, 12vw, 4.2rem) / 1.1 var(--font-display);
+  text-wrap: balance;
+  color: var(--text);
+  text-shadow: 0 2px 0 var(--cream);
+}
+ 
+/* Kotak kado */
+.gift-btn {
+  --w: clamp(210px, 64vw, 300px);
+  width: var(--w);
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  border-radius: 24px;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.gift-btn:disabled { cursor: default; }
+.gift-btn:focus-visible { outline: 3px solid var(--pink-deep); outline-offset: 8px; }
+ 
+.gift-svg { display: block; width: 100%; height: auto; overflow: visible; }
+.bobber { animation: bob 3.2s ease-in-out infinite; }
+.gift-svg.open .bobber { animation: none; }
+.lid { transform-box: fill-box; transform-origin: 50% 100%; transition: transform 0.35s cubic-bezier(0.3, 1.6, 0.5, 1); }
+.gift-svg.lift .lid { transform: translateY(-12px) rotate(-4deg); }
+.gift-svg.open .lid { animation: lidfly 1s cubic-bezier(0.2, 0.7, 0.3, 1) forwards; }
+ 
+@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes lidfly {
+  0%   { transform: translateY(-12px) rotate(-4deg); opacity: 1; }
+  35%  { transform: translate(-6px, -70px) rotate(-10deg); opacity: 1; }
+  100% { transform: translate(70px, -210px) rotate(34deg); opacity: 0; }
+}
+.shake1 { animation: shake1 0.45s ease-in-out; }
+.shake2 { animation: shake2 0.6s ease-in-out; }
+@keyframes shake1 {
+  0%, 100% { transform: none; }
+  20% { transform: translateX(-5px) rotate(-2deg); }
+  40% { transform: translateX(5px) rotate(2deg); }
+  60% { transform: translateX(-3px) rotate(-1deg); }
+  80% { transform: translateX(3px) rotate(1deg); }
+}
+@keyframes shake2 {
+  0%, 100% { transform: none; }
+  15% { transform: translate(-9px, -6px) rotate(-4deg); }
+  35% { transform: translate(9px, 0) rotate(4deg); }
+  55% { transform: translate(-7px, -5px) rotate(-3deg); }
+  75% { transform: translate(6px, 0) rotate(2deg); }
+}
+ 
+/* Hitungan ketukan: tiga hati */
+.dots { display: flex; gap: 10px; }
+.dot {
+  width: 26px; height: 26px;
+  fill: none;
+  stroke: var(--pink-deep);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  transition: fill 0.2s, transform 0.25s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.dot.on { fill: var(--pink-deep); transform: scale(1.18); }
+ 
+.hint {
+  margin: 0;
+  min-height: 1.5em;
+  font: 700 1.05rem / 1.4 var(--font-ui);
+  color: var(--text-soft);
+}
+ 
+.actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.btn {
+  font: 700 1rem / 1.2 var(--font-ui);
+  padding: 0.8em 1.5em;
+  border-radius: 999px;
+  border: 2px solid var(--berry);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:focus-visible { outline: 3px solid var(--pink-deep); outline-offset: 3px; }
+.btn-primary { background: var(--berry); color: #fff; box-shadow: 0 3px 0 #8f2450; }
+.btn-ghost { background: var(--cream); color: var(--text); }
+.btn-ink { background: var(--cream); color: var(--text); }
+ 
+/* Lapisan surat */
+.layer {
+  position: fixed; inset: 0; z-index: 20;
+  display: grid; place-items: center;
+  box-sizing: border-box;
+  padding: calc(16px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) calc(16px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  background: rgba(255, 227, 236, 0.78);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  visibility: hidden; opacity: 0;
+  transition: opacity 0.35s ease, visibility 0s linear 0.35s;
+}
+.layer.show { visibility: visible; opacity: 1; transition: opacity 0.35s ease; }
+ 
+.letter {
+  box-sizing: border-box;
+  width: min(100%, 430px);
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 30px 24px 34px 52px;
+  color: var(--ink);
+  border: 3px dotted var(--pink);
+  border-radius: 20px;
+  background:
+    linear-gradient(90deg, transparent 0 38px, var(--margin-line) 38px 39.5px, transparent 39.5px),
+    repeating-linear-gradient(to bottom, transparent 0 33px, var(--rule) 33px 34px),
+    var(--paper);
+  background-color: var(--paper);
+  background-attachment: local;
+  box-shadow: 0 20px 50px rgba(201, 58, 110, 0.28);
+  transform: translateY(22vh) scale(0.28) rotate(-8deg);
+  transform-origin: 50% 100%;
+  opacity: 0;
+  transition: transform 0.95s cubic-bezier(0.22, 1.15, 0.36, 1), opacity 0.3s ease;
+}
+.layer.show .letter { transform: none; opacity: 1; transition-delay: 0.35s, 0.35s; }
+ 
+.letter-bow { display: block; width: 102px; height: 68px; margin: 0 auto 0 -6px; }
+.letter .to { margin: 0; font: 700 1.5rem / 34px var(--font-hand); color: var(--berry); }
+.letter h2 { margin: 0; font: 400 3rem / 68px var(--font-display); color: var(--text); text-wrap: balance; }
+.letter p { margin: 0 0 34px; font: 500 1.4rem / 34px var(--font-hand); }
+.letter .sign { margin: 0 0 34px; }
+.letter .sign strong { display: block; font-weight: 700; color: var(--berry); }
+ 
+.layer.show .letter [data-i] { animation: fadeUp 0.6s ease both; animation-delay: calc(0.9s + var(--i) * 0.22s); }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+ 
+#fx { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 30; pointer-events: none; }
+ 
+@media (prefers-reduced-motion: reduce) {
+  .bobber, .shake1, .shake2 { animation: none; }
+  .gift-svg.open .lid { animation: none; opacity: 0; }
+  .lid, .dot { transition: none; }
+  .letter { transform: none; transition: opacity 0.3s ease; }
+  .layer.show .letter { transition-delay: 0s; }
+  .layer.show .letter [data-i] { animation: none; }
+}
+</style>
+ 
+<svg class="defs" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="bow" viewBox="0 0 120 80">
+      <path style="fill:var(--pink-soft);stroke:var(--pink-deep);stroke-width:2.2;stroke-linejoin:round" d="M54 46 L36 76 L49 70 L56 78 L62 50 Z M66 46 L84 76 L71 70 L64 78 L58 50 Z"/>
+      <path style="fill:var(--pink);stroke:var(--pink-deep);stroke-width:2.2;stroke-linejoin:round" d="M60 38 C40 2 3 8 8 36 C11 62 42 62 60 42 Z M60 38 C80 2 117 8 112 36 C109 62 78 62 60 42 Z"/>
+      <path style="fill:none;stroke:var(--cream);stroke-width:2.4;stroke-linecap:round;opacity:.85" d="M52 36 C40 16 22 16 20 32 M68 36 C80 16 98 16 100 32"/>
+      <ellipse style="fill:var(--pink-deep);stroke:var(--pink-deep);stroke-width:1" cx="60" cy="42" rx="9" ry="10"/>
+      <path style="fill:none;stroke:var(--cream);stroke-width:2;stroke-linecap:round;opacity:.8" d="M57 37 C58 36 60 36 61 37"/>
+    </symbol>
+    <symbol id="heart" viewBox="-14 -12 28 22">
+      <path d="M0 8 C-12 0 -10 -9 -4 -9 C-1 -9 0 -6 0 -5 C0 -6 1 -9 4 -9 C10 -9 12 0 0 8 Z"/>
+    </symbol>
+    <pattern id="scallop" width="12" height="8" patternUnits="userSpaceOnUse">
+      <circle cx="6" cy="1" r="6" style="fill:var(--cream)"/>
+    </pattern>
+    <pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse">
+      <circle cx="6" cy="6" r="2.4" style="fill:var(--cream)" opacity="0.8"/>
+      <circle cx="17" cy="17" r="2.4" style="fill:var(--cream)" opacity="0.8"/>
+    </pattern>
+  </defs>
+</svg>
+ 
+<main class="stage">
+  <h1 id="title">Ada kado untukmu</h1>
+ 
+  <button class="gift-btn" id="gift" type="button" aria-label="Kotak kado. Ketuk 3 kali untuk membuka.">
+    <svg class="gift-svg" id="giftSvg" viewBox="0 0 240 240" aria-hidden="true" focusable="false">
+      <ellipse cx="120" cy="232" rx="84" ry="7" fill="#c93a6e" opacity="0.22"/>
+      <g class="bobber">
+        <g class="box">
+          <rect x="32" y="116" width="176" height="110" rx="9" style="fill:var(--pink)"/>
+          <rect x="32" y="116" width="176" height="110" rx="9" fill="url(#dots)"/>
+          <path d="M150 116 H199 a9 9 0 0 1 9 9 V217 a9 9 0 0 1 -9 9 H150 Z" style="fill:var(--pink-deep)" opacity="0.28"/>
+          <rect x="106" y="128" width="28" height="98" style="fill:var(--cream)"/>
+          <rect x="106" y="128" width="28" height="98" style="fill:var(--pink-pale)" opacity="0.7"/>
+          <rect x="124" y="128" width="10" height="98" style="fill:var(--pink-soft)" opacity="0.7"/>
+        </g>
+        <g class="lid">
+          <rect x="24" y="92" width="192" height="38" rx="10" style="fill:var(--pink-soft)"/>
+          <rect x="24" y="92" width="192" height="9" rx="4.5" fill="#fff" opacity="0.35"/>
+          <rect x="24" y="126" width="192" height="8" fill="url(#scallop)"/>
+          <rect x="106" y="92" width="28" height="38" style="fill:var(--cream)"/>
+          <rect x="106" y="92" width="28" height="38" style="fill:var(--pink-pale)" opacity="0.7"/>
+          <rect x="124" y="92" width="10" height="38" style="fill:var(--pink-soft)" opacity="0.7"/>
+          <use href="#bow" x="64" y="46" width="112" height="75"/>
+        </g>
+      </g>
+    </svg>
+  </button>
+ 
+  <div class="dots" aria-hidden="true">
+    <svg class="dot" viewBox="-14 -12 28 22"><path d="M0 8 C-12 0 -10 -9 -4 -9 C-1 -9 0 -6 0 -5 C0 -6 1 -9 4 -9 C10 -9 12 0 0 8 Z"/></svg>
+    <svg class="dot" viewBox="-14 -12 28 22"><path d="M0 8 C-12 0 -10 -9 -4 -9 C-1 -9 0 -6 0 -5 C0 -6 1 -9 4 -9 C10 -9 12 0 0 8 Z"/></svg>
+    <svg class="dot" viewBox="-14 -12 28 22"><path d="M0 8 C-12 0 -10 -9 -4 -9 C-1 -9 0 -6 0 -5 C0 -6 1 -9 4 -9 C10 -9 12 0 0 8 Z"/></svg>
+  </div>
+  <p class="hint" id="hint" aria-live="polite">Ketuk kotaknya 3 kali ya</p>
+ 
+  <div class="actions" id="actions" hidden>
+    <button class="btn btn-primary" id="readBtn" type="button">Baca suratnya</button>
+    <button class="btn btn-ghost" id="againBtn" type="button">Ulangi dari awal</button>
+  </div>
+</main>
+ 
+<div class="layer" id="layer" aria-hidden="true">
+  <article class="letter" id="letter" aria-labelledby="lh">
+    <svg class="letter-bow" aria-hidden="true" focusable="false" data-i="0" style="--i:0"><use href="#bow"/></svg>
+    <p class="to" id="to" data-i="0" style="--i:0">Woi Nidaul Usus Hanifia,</p>
+    <h2 id="lh" data-i="1" style="--i:1">Habede.</h2>
+    <p data-i="2" style="--i:2">Semoga yang tersemogakan dikabulkan.</p>
+    <p data-i="3" style="--i:3">Kayaknya lu lebih beriman dari gw, jadi doa aja sendiri. Gw dengan iman gw ini akan bantu aamiin-in aja.</p>
+    <p data-i="4" style="--i:4">Semoga makin kaya dah lu, gw dah nge-list barang apa aja buat lu jajanin.</p>
+    <p data-i="5" style="--i:5">Semoga sehat selalu dan benci Prabowo selalu.</p>
+    <button class="btn btn-ink" id="closeBtn" type="button" data-i="6" style="--i:6">Tutup surat</button>
+  </article>
+</div>
+ 
+<canvas id="fx" aria-hidden="true"></canvas>
+ 
+<script>
+(function () {
+  // Isi nama di sini kalau ingin ucapan lebih personal.
+  var TO = "";
+  var FROM = "";
+ 
+  var $ = function (id) { return document.getElementById(id); };
+  var btn = $("gift"), svg = $("giftSvg"), hint = $("hint"), actions = $("actions");
+  var layer = $("layer"), closeBtn = $("closeBtn"), readBtn = $("readBtn"), againBtn = $("againBtn");
+  var dots = Array.prototype.slice.call(document.querySelectorAll(".dot"));
+  var cv = $("fx"), ctx = cv.getContext("2d");
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+ 
+  if (TO) {
+    $("title").textContent = "Ada kado untuk " + TO;
+    $("to").textContent = "Untuk " + TO + ",";
+  }
+ 
+  var HINTS = ["Ketuk kotaknya 3 kali ya", "Yay, dua kali lagi", "Satu lagi, hampir kebuka!", ""];
+  var taps = 0, busy = false, opened = false;
+ 
+  function renderDots() {
+    dots.forEach(function (d, i) { d.classList.toggle("on", taps > i); });
+  }
+  function shake(cls) {
+    btn.classList.remove("shake1", "shake2");
+    void btn.offsetWidth;
+    btn.classList.add(cls);
+  }
+  btn.addEventListener("animationend", function (e) {
+    if (e.target === btn) btn.classList.remove("shake1", "shake2");
+  });
+ 
+  btn.addEventListener("click", function () {
+    if (opened || busy) return;
+    taps++;
+    renderDots();
+    hint.textContent = HINTS[taps];
+    if (taps === 1) {
+      shake("shake1");
+    } else if (taps === 2) {
+      shake("shake2");
+      svg.classList.add("lift");
+    } else {
+      busy = true;
+      shake("shake2");
+      svg.classList.add("lift");
+      setTimeout(openGift, reduce.matches ? 0 : 330);
+    }
+  });
+ 
+  function openGift() {
+    opened = true;
+    busy = false;
+    btn.disabled = true;
+    svg.classList.add("open");
+    if (!reduce.matches) {
+      burst(130, 34);
+      setTimeout(function () { burst(60, 12); }, 450);
+    }
+    setTimeout(showLetter, reduce.matches ? 0 : 300);
+  }
+ 
+  function showLetter() {
+    layer.classList.add("show");
+    layer.setAttribute("aria-hidden", "false");
+    closeBtn.focus({ preventScroll: true });
+  }
+  function hideLetter() {
+    if (!layer.classList.contains("show")) return;
+    layer.classList.remove("show");
+    layer.setAttribute("aria-hidden", "true");
+    actions.hidden = false;
+    hint.textContent = "Kadonya sudah terbuka";
+    readBtn.focus({ preventScroll: true });
+  }
+  function reset() {
+    layer.classList.remove("show");
+    layer.setAttribute("aria-hidden", "true");
+    taps = 0; opened = false; busy = false;
+    btn.disabled = false;
+    svg.classList.remove("open", "lift");
+    renderDots();
+    hint.textContent = HINTS[0];
+    actions.hidden = true;
+    parts.length = 0;
+    ctx.clearRect(0, 0, W, H);
+    btn.focus({ preventScroll: true });
+  }
+ 
+  closeBtn.addEventListener("click", hideLetter);
+  layer.addEventListener("click", function (e) { if (e.target === layer) hideLetter(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") hideLetter(); });
+  readBtn.addEventListener("click", showLetter);
+  againBtn.addEventListener("click", reset);
+ 
+  /* Ledakan bow, hati, mutiara, dan pita satin */
+  var W = 0, H = 0, DPR = 1, parts = [], raf = 0, last = 0;
+  var PINKS = ["#ffb3c9", "#ff8fb1", "#ffd6e3", "#fff8f2", "#f7a1bd", "#e8618c", "#ffc9d9", "#c9314f"];
+  var STREAM = ["#ffb3c9", "#ff8fb1", "#ffd6e3", "#fff8f2", "#f7a1bd", "#e8618c"];
+  var EDGE = "rgba(201,49,79,0.32)";
+  var BOW = new Path2D("M54 46 L36 76 L49 70 L56 78 L62 50 Z M66 46 L84 76 L71 70 L64 78 L58 50 Z M60 38 C40 2 3 8 8 36 C11 62 42 62 60 42 Z M60 38 C80 2 117 8 112 36 C109 62 78 62 60 42 Z");
+  var HEART = new Path2D("M0 8 C-12 0 -10 -9 -4 -9 C-1 -9 0 -6 0 -5 C0 -6 1 -9 4 -9 C10 -9 12 0 0 8 Z");
+ 
+  function size() {
+    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  }
+  window.addEventListener("resize", size);
+  size();
+ 
+  function rnd(a, b) { return a + Math.random() * (b - a); }
+  function pickFrom(arr) { return arr[(Math.random() * arr.length) | 0]; }
+ 
+  function burst(nConfetti, nStreamers) {
+    var r = svg.getBoundingClientRect();
+    var ox = r.left + r.width / 2, oy = r.top + r.height * 0.42;
+    var k = Math.max(0.75, Math.min(1.25, H / 760));
+    var i, a, sp, roll, kind;
+    for (i = 0; i < nConfetti; i++) {
+      a = -Math.PI / 2 + rnd(-1, 1) * 1.05;
+      sp = rnd(8, 19) * k;
+      roll = Math.random();
+      kind = roll < 0.34 ? "h" : roll < 0.58 ? "p" : roll < 0.74 ? "b" : "c";
+      parts.push({
+        t: kind, x: ox + rnd(-30, 30), y: oy,
+        vx: Math.cos(a) * sp, vy: Math.sin(a) * sp,
+        s: kind === "b" ? rnd(0.2, 0.34) : kind === "h" ? rnd(0.7, 1.25) : rnd(3.5, 6),
+        w: rnd(6, 10), h: rnd(10, 16),
+        rot: rnd(0, 6.28), vr: rnd(-0.25, 0.25), rot0: rnd(-0.5, 0.5),
+        ph: rnd(0, 6.28), vph: rnd(0.1, 0.28),
+        col: kind === "p" ? "#fffaf6" : pickFrom(PINKS), life: 0
+      });
+    }
+    for (i = 0; i < nStreamers; i++) {
+      a = -Math.PI / 2 + rnd(-1, 1) * 0.9;
+      sp = rnd(9, 18) * k;
+      parts.push({
+        t: "s", x: ox + rnd(-20, 20), y: oy,
+        vx: Math.cos(a) * sp, vy: Math.sin(a) * sp,
+        pts: [], col: pickFrom(STREAM), lw: rnd(3.5, 6),
+        ph: rnd(0, 6.28), vph: rnd(0.12, 0.22), amp: rnd(0.5, 1.3), life: 0
+      });
+    }
+    if (!raf) { last = performance.now(); raf = requestAnimationFrame(frame); }
+  }
+ 
+  function frame(t) {
+    var dt = Math.min((t - last) / 16.667, 2.5);
+    last = t;
+    ctx.clearRect(0, 0, W, H);
+    var i, p, j, alpha;
+    for (i = parts.length - 1; i >= 0; i--) {
+      p = parts[i];
+      p.life += dt;
+      alpha = p.life > 340 ? Math.max(0, 1 - (p.life - 340) / 80) : 1;
+      if (p.y > H + 60 || alpha <= 0) { parts.splice(i, 1); continue; }
+ 
+      if (p.t !== "s") {
+        p.vy += 0.3 * dt;
+        p.vx *= Math.pow(0.972, dt);
+        p.vy *= Math.pow(0.972, dt);
+        p.ph += p.vph * dt;
+        p.x += (p.vx + Math.sin(p.ph) * 0.7) * dt;
+        p.y += p.vy * dt;
+        p.rot += p.vr * dt;
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.translate(p.x, p.y);
+        if (p.t === "c") {
+          ctx.rotate(p.rot);
+          ctx.scale(1, Math.cos(p.ph));
+          ctx.fillStyle = p.col;
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        } else if (p.t === "p") {
+          ctx.fillStyle = p.col;
+          ctx.strokeStyle = "rgba(232,97,140,0.45)";
+          ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.arc(0, 0, p.s, 0, 6.2832); ctx.fill(); ctx.stroke();
+          ctx.fillStyle = "rgba(255,255,255,0.95)";
+          ctx.beginPath(); ctx.arc(-p.s * 0.3, -p.s * 0.3, p.s * 0.3, 0, 6.2832); ctx.fill();
+        } else if (p.t === "h") {
+          ctx.rotate(p.rot0 + Math.sin(p.ph) * 0.5);
+          ctx.scale(p.s, p.s);
+          ctx.fillStyle = p.col;
+          ctx.strokeStyle = EDGE;
+          ctx.lineWidth = 1.2 / p.s;
+          ctx.lineJoin = "round";
+          ctx.fill(HEART); ctx.stroke(HEART);
+        } else {
+          ctx.rotate(p.rot0 + Math.sin(p.ph) * 0.45);
+          ctx.scale(p.s, p.s);
+          ctx.translate(-60, -42);
+          ctx.fillStyle = p.col;
+          ctx.strokeStyle = EDGE;
+          ctx.lineWidth = 2 / p.s;
+          ctx.lineJoin = "round";
+          ctx.fill(BOW); ctx.stroke(BOW);
+          ctx.beginPath(); ctx.ellipse(60, 42, 9, 10, 0, 0, 6.2832);
+          ctx.fillStyle = p.col; ctx.fill(); ctx.stroke();
+        }
+        ctx.restore();
+      } else {
+        p.vy += 0.24 * dt;
+        p.vx += Math.sin(p.ph) * p.amp * 0.35 * dt;
+        p.ph += p.vph * dt;
+        p.vx *= Math.pow(0.978, dt);
+        p.vy *= Math.pow(0.978, dt);
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.pts.unshift({ x: p.x, y: p.y });
+        if (p.pts.length > 18) p.pts.pop();
+        if (p.pts.length > 2) {
+          ctx.save();
+          ctx.globalAlpha = alpha;
+          ctx.lineCap = "round";
+          ctx.lineJoin = "round";
+          for (var pass = 0; pass < 2; pass++) {
+            ctx.strokeStyle = pass === 0 ? EDGE : p.col;
+            ctx.lineWidth = pass === 0 ? p.lw + 2 : p.lw;
+            ctx.beginPath();
+            ctx.moveTo(p.pts[0].x, p.pts[0].y);
+            for (j = 1; j < p.pts.length; j++) {
+              var mx = (p.pts[j - 1].x + p.pts[j].x) / 2, my = (p.pts[j - 1].y + p.pts[j].y) / 2;
+              ctx.quadraticCurveTo(p.pts[j - 1].x, p.pts[j - 1].y, mx, my);
+            }
+            ctx.stroke();
+          }
+          ctx.restore();
+        }
+      }
+    }
+    if (parts.length) raf = requestAnimationFrame(frame);
+    else { raf = 0; ctx.clearRect(0, 0, W, H); }
+  }
+})();
+</script>
+ 
